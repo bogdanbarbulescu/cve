@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Monitorizare CVE</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <style>
+        :root {
+            --primary: #3498db;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --success: #2ecc71;
+            --info: #9b59b6;
+            --dark: #34495e;
+            --light: #ecf0f1;
+            --gray: #95a5a6;
+            --text-dark: #2c3e50;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--text-dark);
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            grid-template-rows: 70px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            grid-row: 1 / 3;
+            background-color: var(--dark);
+            color: white;
+            padding: 20px 0;
+            transition: all 0.3s;
+        }
+
+        .logo {
+            padding: 0 20px 20px;
+            font-size: 22px;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            color: var(--primary);
+        }
+
+        .nav-menu {
+            margin-top: 30px;
+            list-style: none;
+        }
+
+        .nav-item {
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background-color: rgba(255,255,255,0.1);
+            border-left: 4px solid var(--primary);
+        }
+
+        .nav-item.active {
+            background-color: rgba(52, 152, 219, 0.2);
+        }
+
+        /* Header */
+        .header {
+            grid-column: 2;
+            background-color: white;
+            padding: 0 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            z-index: 10;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: var(--light);
+            border-radius: 20px;
+            padding: 8px 15px;
+            width: 300px;
+        }
+
+        .search-bar input {
+            background: transparent;
+            border: none;
+            outline: none;
+            margin-left: 10px;
+            width: 100%;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* Main Content */
+        .main-content {
+            grid-column: 2;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .refresh-btn {
+            background-color: var(--light);
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 8px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .refresh-btn:hover {
+            background-color: #dfe6e9;
+        }
+
+        /* Stats Cards */
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-title {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            gap: 5px;
+        }
+
+        .trend-up {
+            color: var(--danger);
+        }
+
+        .trend-down {
+            color: var(--success);
+        }
+
+        /* Charts & Tables Section */
+        .charts-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .chart-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chart-period {
+            border: 1px solid var(--light);
+            background-color: white;
+            border-radius: 16px;
+            padding: 5px 15px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .chart-period.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Table Section */
+        .table-section {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 30px;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .table-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            background-color: white;
+            border: 1px solid var(--light);
+            border-radius: var(--border-radius);
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            background-color: var(--light);
+        }
+
+        .cve-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .cve-table th {
+            text-align: left;
+            padding: 12px 15px;
+            background-color: var(--light);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .cve-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--light);
+            font-size: 14px;
+        }
+
+        .cve-table tr:hover {
+            background-color: rgba(236, 240, 241, 0.5);
+        }
+
+        .severity {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .severity.critical {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: var(--danger);
+        }
+
+        .severity.high {
+            background-color: rgba(243, 156, 18, 0.1);
+            color: var(--warning);
+        }
+
+        .severity.medium {
+            background-color: rgba(241, 196, 15, 0.1);
+            color: #f1c40f;
+        }
+
+        .severity.low {
+            background-color: rgba(46, 204, 113, 0.1);
+            color: var(--success);
+        }
+
+        .status {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status.patched {
+            background-color: rgba(46, 204, 113, 0.1);
+            color: var(--success);
+        }
+
+        .status.unpatched {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: var(--danger);
+        }
+
+        .status.in-progress {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--primary);
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--dark);
+            opacity: 0.6;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            opacity: 1;
+        }
+
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-top: 20px;
+            gap: 5px;
+        }
+
+        .page-btn {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: 1px solid var(--light);
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .page-btn:hover, .page-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Responsiveness */
+        @media (max-width: 1024px) {
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+
+            .header {
+                grid-column: 1;
+            }
+
+            .main-content {
+                grid-column: 1;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .search-bar {
+                width: 180px;
+            }
+
+            .user-profile span {
+                display: none;
+            }
+
+            .stats-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-shield-alt"></i>
+                <span>CVE Monitor</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item active">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </li>
+                <li class="nav-item">
+                    <i class="fas fa-database"></i>
+                    <span>Bază de date CVE</span>
+                </li>
+                <li class="nav-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Rapoarte & Analize</span>
+                </li>
+                <li class="nav-item">
+                    <i class="fas fa-bell"></i>
+                    <span>Notificări</span>
+                </li>
+                <li class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Setări</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Header -->
+        <div class="header">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Caută CVE-uri...">
+            </div>
+            <div class="user-actions">
+                <div class="notification-bell">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </div>
+                <div class="user-profile">
+                    <div class="avatar">AM</div>
+                    <span>Admin</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="page-title">
+                <h1>Dashboard</h1>
+                <button class="refresh-btn">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Reîmprospătează</span>
+                </button>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-title">Total CVE-uri monitorizate</div>
+                    <div class="stat-value">1,758</div>
+                    <div class="stat-trend">
+                        <i class="fas fa-arrow-up trend-up"></i>
+                        <span>+43 (ultimele 7 zile)</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">CVE-uri critice</div>
+                    <div class="stat-value">24</div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+8 (ultimele 7 zile)</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">CVE-uri remediabile</div>
+                    <div class="stat-value">387</div>
+                    <div class="stat-trend">
+                        <i class="fas fa-arrow-down trend-down"></i>
+                        <span>-12 (ultimele 7 zile)</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Rata de remediere</div>
+                    <div class="stat-value">76%</div>
+                    <div class="stat-trend">
+                        <i class="fas fa-arrow-up trend-down"></i>
+                        <span>+2.3% (ultimele 7 zile)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="charts-section">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">Distribuția CVE-urilor după severitate</div>
+                        <div class="chart-actions">
+                            <div class="chart-period active">7 zile</div>
+                            <div class="chart-period">30 zile</div>
+                            <div class="chart-period">1 an</div>
+                        </div>
+                    </div>
+                    <canvas id="severityChart" height="250"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">Tendințe CVE-uri</div>
+                        <div class="chart-actions">
+                            <div class="chart-period active">7 zile</div>
+                            <div class="chart-period">30 zile</div>
+                            <div class="chart-period">1 an</div>
+                        </div>
+                    </div>
+                    <canvas id="trendsChart" height="250"></canvas>
+                </div>
+            </div>
+
+            <!-- Table Section -->
+            <div class="table-section">
+                <div class="table-header">
+                    <div class="table-title">CVE-uri recente</div>
+                    <div class="table-actions">
+                        <button class="filter-btn">
+                            <i class="fas fa-filter"></i>
+                            <span>Filtrează</span>
+                        </button>
+                        <button class="filter-btn">
+                            <i class="fas fa-download"></i>
+                            <span>Export</span>
+                        </button>
+                    </div>
+                </div>
+                <table class="cve-table">
+                    <thead>
+                        <tr>
+                            <th>ID CVE</th>
+                            <th>Denumire</th>
+                            <th>Severitate</th>
+                            <th>Produs</th>
+                            <th>Data publicării</th>
+                            <th>Status</th>
+                            <th>Acțiuni</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>CVE-2025-0123</td>
+                            <td>Buffer Overflow in System Component</td>
+                            <td><span class="severity critical">Critical</span></td>
+                            <td>Windows Server 2022</td>
+                            <td>11 Mai 2025</td>
+                            <td><span class="status unpatched">Nerezolvat</span></td>
+                            <td>
+                                <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn"><i class="fas fa-flag"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>CVE-2025-1047</td>
+                            <td>Cross-Site Scripting Vulnerability</td>
+                            <td><span class="severity high">High</span></td>
+                            <td>Apache Tomcat 9.0.85</td>
+                            <td>10 Mai 2025</td>
+                            <td><span class="status in-progress">În lucru</span></td>
+                            <td>
+                                <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn"><i class="fas fa-flag"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>CVE-2025-3089</td>
+                            <td>SQL Injection in Auth Module</td>
+                            <td><span class="severity critical">Critical</span></td>
+                            <td>Oracle Database 19c</td>
+                            <td>09 Mai 2025</td>
+                            <td><span class="status patched">Rezolvat</span></td>
+                            <td>
+                                <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn"><i class="fas fa-flag"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>CVE-2025-2468</td>
+                            <td>RCE in API Endpoint</td>
+                            <td><span class="severity high">High</span></td>
+                            <td>Spring Boot 3.2.1</td>
+                            <td>08 Mai 2025</td>
+                            <td><span class="status in-progress">În lucru</span></td>
+                            <td>
+                                <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn"><i class="fas fa-flag"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>CVE-2025-5643</td>
+                            <td>CSRF in Admin Dashboard</td>
+                            <td><span class="severity medium">Medium</span></td>
+                            <td>WordPress 6.4.2</td>
+                            <td>07 Mai 2025</td>
+                            <td><span class="status patched">Rezolvat</span></td>
+                            <td>
+                                <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn"><i class="fas fa-flag"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>CVE-2025-7832</td>
+                            <td>DoS Vulnerability in Network Stack</td>
+                            <td><span class="severity low">Low</span></td>
+                            <td>Cisco IOS XE 17.9.1</td>
+                            <td>05 Mai 2025</td>
+                            <td><span class="status unpatched">Nerezolvat</span></td>
+                            <td>
+                                <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn"><i class="fas fa-flag"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="pagination">
+                    <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
+                    <button class="page-btn active">1</button>
+                    <button class="page-btn">2</button>
+                    <button class="page-btn">3</button>
+                    <button class="page-btn">...</button>
+                    <button class="page-btn">12</button>
+                    <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Charts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Severity Distribution Chart
+            const severityCtx = document.getElementById('severityChart').getContext('2d');
+            const severityChart = new Chart(severityCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Critical', 'High', 'Medium', 'Low'],
+                    datasets: [{
+                        data: [24, 87, 153, 123],
+                        backgroundColor: [
+                            '#e74c3c',
+                            '#f39c12',
+                            '#f1c40f',
+                            '#2ecc71'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+
+            // Trends Chart
+            const trendsCtx = document.getElementById('trendsChart').getContext('2d');
+            const trendsChart = new Chart(trendsCtx, {
+                type: 'line',
+                data: {
+                    labels: ['7 Mai', '8 Mai', '9 Mai', '10 Mai', '11 Mai', '12 Mai', '13 Mai'],
+                    datasets: [{
+                        label: 'CVE-uri noi',
+                        data: [12, 19, 8, 15, 23, 17, 14],
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'CVE-uri rezolvate',
+                        data: [7, 11, 13, 8, 9, 12, 15],
+                        borderColor: '#2ecc71',
+                        backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Period selection for charts
+            document.querySelectorAll('.chart-period').forEach(period => {
+                period.addEventListener('click', function() {
+                    const parent = this.parentElement;
+                    parent.querySelectorAll('.chart-period').forEach(p => {
+                        p.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
