@@ -19,6 +19,23 @@
     --box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     --box-shadow-light: 0 2px 6px rgba(0,0,0,0.05);
     --transition-speed: 0.3s;
+      /* Dark Theme Overrides (vor fi aplicate când body.dark-theme există) */
+    --dark-primary: var(--primary); /* Păstrăm același primar sau îl ajustăm */
+    --dark-danger: var(--danger);
+    /* ... */
+    --dark-sidebar-bg: #2c3e50; /* Sidebar în dark mode */
+    --dark-component-bg: #34495e; /* Fundalul componentelor în dark mode */
+    --dark-gray: #7f8c8d;
+    --dark-text-primary: #ecf0f1; /* Textul principal în dark mode */
+    --dark-text-secondary: #bdc3c7; /* Text secundar în dark mode */
+    --dark-bg-body: #23272a; /* Fundalul body în dark mode */
+    --dark-bg-card: #2c3e50; /* Fundalul cardurilor în dark mode */
+    --dark-border-color: #464c52; /* Culoarea bordurilor în dark mode */
+    --dark-box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    --dark-box-shadow-light: 0 2px 6px rgba(0,0,0,0.15);
+
+    --transition-speed: 0.3s;
+    --border-radius: 8px;
 }
 
 /* Global Styles */
@@ -623,4 +640,283 @@ body {
     .severity, .status { padding: 4px 8px; font-size: 10px; }
     .action-btn { font-size: 13px; }
     #app-settings-form .checkbox-group { flex-direction: column; align-items: flex-start; gap: 10px; }
+}
+
+/* ... (restul CSS-ului global) ... */
+
+/* Dark Theme Styles */
+body.dark-theme {
+    background-color: var(--dark-bg-body);
+    color: var(--dark-text-primary);
+
+    --primary: var(--dark-primary); /* Suprascrie variabilele globale dacă e necesar */
+    --danger: var(--dark-danger);
+    --light: var(--dark-component-bg); /* Inversăm light cu dark component */
+    --gray: var(--dark-gray);
+    --text-dark: var(--dark-text-primary);
+    --text-light: var(--dark-text-primary); /* Textul pe fundaluri închise rămâne deschis */
+    --bg-card: var(--dark-bg-card);
+    --border-color: var(--dark-border-color);
+    --box-shadow: var(--dark-box-shadow);
+    --box-shadow-light: var(--dark-box-shadow-light);
+}
+
+/* Ajustări specifice pentru componente în Dark Mode */
+body.dark-theme .sidebar {
+    background-color: var(--dark-sidebar-bg);
+    color: var(--dark-text-primary);
+    border-right: 1px solid var(--dark-border-color); /* Adaugă o separare vizuală */
+}
+body.dark-theme .logo {
+    border-bottom-color: rgba(255,255,255,0.05);
+}
+body.dark-theme .nav-item:hover {
+    background-color: rgba(255,255,255,0.08);
+}
+body.dark-theme .nav-item.active {
+    background-color: rgba(52, 152, 219, 0.15); /* Ajustează opacitatea pentru dark */
+}
+
+body.dark-theme .header {
+    background-color: var(--dark-bg-card); /* Header-ul folosește fundalul cardurilor */
+    box-shadow: var(--dark-box-shadow-light);
+}
+body.dark-theme .search-bar {
+    background-color: var(--dark-component-bg);
+}
+body.dark-theme .search-bar input {
+    color: var(--dark-text-primary);
+}
+body.dark-theme .search-bar input::placeholder {
+    color: var(--dark-text-secondary);
+}
+body.dark-theme .search-bar i,
+body.dark-theme .user-actions .notification-bell,
+body.dark-theme .user-actions .theme-toggle-btn i {
+    color: var(--dark-text-secondary);
+}
+body.dark-theme .user-actions .theme-toggle-btn:hover i,
+body.dark-theme .user-actions .notification-bell:hover {
+     color: var(--dark-text-primary);
+}
+body.dark-theme .avatar {
+    /* Păstrează culorile primare sau ajustează dacă e necesar */
+}
+
+body.dark-theme .main-content {
+    background-color: var(--dark-bg-body);
+}
+
+body.dark-theme .page-title h1 {
+    color: var(--dark-text-primary);
+}
+body.dark-theme .refresh-btn {
+    background-color: var(--dark-component-bg);
+    border-color: var(--dark-border-color);
+    color: var(--dark-text-primary);
+}
+body.dark-theme .refresh-btn:hover {
+    background-color: #4a5568; /* O nuanță puțin mai deschisă a component-bg */
+}
+body.dark-theme .refresh-btn i {
+    color: var(--primary); /* Păstrează culoarea iconiței sau ajustează */
+}
+
+body.dark-theme .card,
+body.dark-theme .stat-card,
+body.dark-theme .chart-container,
+body.dark-theme .table-section {
+    background-color: var(--dark-bg-card);
+    box-shadow: var(--dark-box-shadow);
+    border: 1px solid var(--dark-border-color); /* Adaugă o bordură subtilă */
+}
+body.dark-theme .card-header,
+body.dark-theme .chart-header,
+body.dark-theme .table-header {
+    border-bottom-color: var(--dark-border-color);
+}
+body.dark-theme .stat-title,
+body.dark-theme .stat-trend .trend-text,
+body.dark-theme .chart-title,
+body.dark-theme .table-title,
+body.dark-theme .filter-item label,
+body.dark-theme .table-controls label {
+    color: var(--dark-text-secondary);
+}
+body.dark-theme .stat-value {
+    color: var(--dark-text-primary);
+}
+
+body.dark-theme .chart-period {
+    background-color: var(--dark-bg-card);
+    border-color: var(--dark-border-color);
+    color: var(--dark-text-secondary);
+}
+body.dark-theme .chart-period:hover {
+    background-color: var(--dark-component-bg);
+}
+body.dark-theme .chart-period.active {
+    background-color: var(--primary);
+    color: white; /* Textul pe primar rămâne alb */
+    border-color: var(--primary);
+}
+
+body.dark-theme .filter-btn {
+    background-color: var(--dark-component-bg);
+    border-color: var(--dark-border-color);
+    color: var(--dark-text-primary);
+}
+body.dark-theme .filter-btn:hover {
+    background-color: #4a5568; /* O nuanță puțin mai deschisă */
+}
+body.dark-theme .filter-btn i {
+    color: var(--primary); /* Sau --dark-text-secondary */
+}
+body.dark-theme .filter-btn.primary-btn {
+    background-color: var(--primary); color: white; border-color: var(--primary);
+}
+body.dark-theme .filter-btn.primary-btn:hover { background-color: var(--primary-dark); }
+body.dark-theme .filter-btn.primary-btn i { color: white; }
+body.dark-theme .filter-btn.danger-btn { background-color: var(--danger); color:white; border-color: var(--danger); }
+body.dark-theme .filter-btn.danger-btn:hover { background-color: var(--danger-dark); }
+
+
+body.dark-theme .severity-filter-btn {
+    background-color: var(--dark-component-bg);
+    border-color: var(--dark-border-color);
+    color: var(--dark-text-secondary);
+}
+body.dark-theme .severity-filter-btn:hover {
+    background-color: #4a5568;
+}
+body.dark-theme .severity-filter-btn.active {
+    background-color: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+
+body.dark-theme .cve-table th {
+    background-color: var(--dark-component-bg); /* Fundalul header-ului tabelului */
+    color: var(--dark-text-primary);
+    border-bottom-color: var(--dark-border-color);
+}
+body.dark-theme .cve-table td {
+    border-bottom-color: var(--dark-border-color);
+}
+body.dark-theme .cve-table tr:hover {
+    background-color: rgba(74, 85, 104, 0.5); /* O nuanță de hover pentru rânduri */
+}
+body.dark-theme .action-btn {
+    color: var(--dark-text-secondary);
+}
+body.dark-theme .action-btn:hover {
+    color: var(--primary);
+}
+
+/* Stil pentru badge-uri în dark mode */
+body.dark-theme .severity.critical { background-color: rgba(231, 76, 60, 0.25); color: #f69387; }
+body.dark-theme .severity.high { background-color: rgba(243, 156, 18, 0.25); color: #f7c06e; }
+body.dark-theme .severity.medium { background-color: rgba(241, 196, 15, 0.25); color: #f5dd76; }
+body.dark-theme .severity.low { background-color: rgba(46, 204, 113, 0.2); color: #79e0a5; }
+body.dark-theme .severity.unknown { background-color: rgba(127, 140, 141, 0.2); color: #a7b4b5; }
+
+body.dark-theme .status.patched, body.dark-theme .status.rezolvat { background-color: rgba(46, 204, 113, 0.2); color: #79e0a5; }
+body.dark-theme .status.unpatched, body.dark-theme .status.nerezolvat { background-color: rgba(231, 76, 60, 0.25); color: #f69387; }
+body.dark-theme .status.in-progress, body.dark-theme .status.în-lucru { background-color: rgba(52, 152, 219, 0.2); color: #85c1e9; }
+body.dark-theme .status.unknown { background-color: rgba(127, 140, 141, 0.2); color: #a7b4b5; }
+
+
+body.dark-theme .page-btn {
+    background-color: var(--dark-component-bg);
+    border-color: var(--dark-border-color);
+    color: var(--dark-text-secondary);
+}
+body.dark-theme .page-btn:hover:not(.disabled),
+body.dark-theme .page-btn.active {
+    background-color: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+body.dark-theme .page-btn.disabled {
+    background-color: var(--dark-component-bg);
+    color: var(--dark-gray);
+}
+
+
+/* Stiluri pentru inputuri și selectoare în dark mode */
+body.dark-theme .filter-item input[type="text"],
+body.dark-theme .filter-item input[type="date"],
+body.dark-theme .filter-item input[type="number"],
+body.dark-theme .filter-item select,
+body.dark-theme #app-settings-form input[type="email"],
+body.dark-theme #app-settings-form select,
+body.dark-theme .table-controls select,
+body.dark-theme #searchInputCveIdDashboard {
+    background-color: var(--dark-component-bg);
+    border-color: var(--dark-border-color);
+    color: var(--dark-text-primary);
+}
+body.dark-theme .filter-item input:focus,
+body.dark-theme .filter-item select:focus,
+body.dark-theme #app-settings-form input:focus,
+body.dark-theme #app-settings-form select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.25); /* Ajustează alpha pentru dark */
+}
+
+body.dark-theme #app-settings-form label.inline-label {
+    color: var(--dark-text-secondary);
+}
+body.dark-theme #app-settings-form .form-section {
+    border-bottom-color: var(--dark-border-color);
+}
+body.dark-theme #app-settings-form h4 {
+    color: var(--primary); /* Păstrează sau ajustează */
+}
+body.dark-theme .feedback-message.success { background-color: rgba(46, 204, 113, 0.15); color: #a1dfbf; border-color: #4caf7a; }
+body.dark-theme .feedback-message.error { background-color: rgba(231, 76, 60, 0.15); color: #f0a29a; border-color: #d35400; }
+body.dark-theme .feedback-message.info { background-color: rgba(52, 152, 219, 0.15); color: #a1c9e6; border-color: #3498db; }
+
+
+body.dark-theme .notifications-list .notification-item {
+    border-bottom-color: var(--dark-border-color);
+}
+body.dark-theme .notifications-list .notification-item:hover {
+    background-color: #3a4148; /* O nuanță puțin mai deschisă */
+}
+body.dark-theme .notifications-list .notification-item.unread {
+    background-color: #303d4a; /* Fundal unread mai subtil */
+}
+body.dark-theme .notifications-list .notification-title {
+    color: var(--dark-text-primary);
+}
+body.dark-theme .notifications-list .notification-message,
+body.dark-theme .notifications-list .notification-time {
+    color: var(--dark-text-secondary);
+}
+
+/* Stil pentru butonul de toggle temă */
+.theme-toggle-btn {
+    background: none;
+    border: none;
+    color: var(--text-dark); /* Culoarea iconiței în light mode */
+    font-size: 18px;
+    cursor: pointer;
+    padding: 5px;
+    transition: color var(--transition-speed), transform var(--transition-speed);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.theme-toggle-btn:hover {
+    color: var(--primary);
+    transform: scale(1.1);
+}
+/* Stil pentru iconița soarelui în dark mode (va fi setată de JS) */
+body.dark-theme .theme-toggle-btn i.fa-sun {
+    color: var(--warning); /* Galben pentru soare */
+}
+body.dark-theme .theme-toggle-btn:hover i.fa-sun {
+    color: #f3b74c; /* O nuanță mai deschisă de galben la hover */
 }
