@@ -174,6 +174,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            flex-wrap: wrap; /* Allow wrap for refresh button */
+            gap: 10px; /* Add gap if it wraps */
         }
 
         .refresh-btn {
@@ -250,6 +252,18 @@
             border-radius: var(--border-radius);
             padding: 20px;
             box-shadow: var(--box-shadow);
+            display: flex;
+            flex-direction: column; /* Ensure header and canvas stack properly */
+        }
+        
+        .chart-container canvas {
+            max-width: 100%; /* Ensure canvas scales down width-wise */
+        }
+        
+        /* Specific heights for charts to make them more compact */
+        #severityChart, #trendsChart {
+            height: 200px !important; /* Or desired height, !important might be needed to override Chart.js inline style */
+            width: 100% !important; /* Ensure it takes full width of its container part */
         }
 
         .chart-header {
@@ -257,24 +271,28 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
+            flex-wrap: wrap; /* Allow wrapping for smaller screens */
+            gap: 10px; /* Gap for wrapped items */
         }
 
         .chart-title {
             font-size: 16px;
             font-weight: 600;
+            flex-shrink: 0; /* Prevent title from shrinking too much */
         }
 
         .chart-actions {
             display: flex;
             gap: 10px;
+            flex-wrap: wrap; /* Allow period buttons to wrap */
         }
 
         .chart-period {
             border: 1px solid var(--light);
             background-color: white;
             border-radius: 16px;
-            padding: 5px 15px;
-            font-size: 13px;
+            padding: 5px 10px; /* Slightly reduced padding */
+            font-size: 12px; /* Slightly reduced font size */
             cursor: pointer;
         }
 
@@ -298,6 +316,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
+            flex-wrap: wrap; /* Allow wrapping */
+            gap: 10px; /* Gap for wrapped items */
         }
 
         .table-title {
@@ -308,6 +328,7 @@
         .table-actions {
             display: flex;
             gap: 10px;
+            flex-wrap: wrap; /* Allow buttons to wrap */
         }
 
         .filter-btn {
@@ -320,15 +341,22 @@
             gap: 8px;
             cursor: pointer;
             transition: all 0.2s;
+            font-size: 13px; /* Slightly reduced font size */
         }
 
         .filter-btn:hover {
             background-color: var(--light);
         }
+        
+        .table-responsive-wrapper {
+            overflow-x: auto; /* Enable horizontal scroll for the table */
+            width: 100%;
+        }
 
         .cve-table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 800px; /* Ensure table has a minimum width before scrolling */
         }
 
         .cve-table th {
@@ -337,13 +365,21 @@
             background-color: var(--light);
             font-weight: 600;
             font-size: 14px;
+            white-space: nowrap; /* Prevent header text from wrapping */
         }
 
         .cve-table td {
             padding: 12px 15px;
             border-bottom: 1px solid var(--light);
             font-size: 14px;
+            white-space: nowrap; /* Optional: prevent cell content from wrapping, relies on scroll */
         }
+        
+        .cve-table td:nth-child(2) { /* Denumire column */
+            white-space: normal; /* Allow description to wrap */
+            min-width: 200px; /* Give description more space */
+        }
+
 
         .cve-table tr:hover {
             background-color: rgba(236, 240, 241, 0.5);
@@ -405,6 +441,7 @@
             color: var(--dark);
             opacity: 0.6;
             transition: all 0.2s;
+            padding: 5px; /* Add some padding for easier clicking */
         }
 
         .action-btn:hover {
@@ -417,6 +454,7 @@
             justify-content: flex-end;
             margin-top: 20px;
             gap: 5px;
+            flex-wrap: wrap; /* Allow pagination to wrap */
         }
 
         .page-btn {
@@ -430,6 +468,7 @@
             background-color: white;
             cursor: pointer;
             transition: all 0.2s;
+            font-size: 13px;
         }
 
         .page-btn:hover, .page-btn.active {
@@ -439,41 +478,87 @@
         }
 
         /* Responsiveness */
+        @media (max-width: 1200px) {
+            .stats-cards {
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            }
+        }
+        
         @media (max-width: 1024px) {
             .charts-section {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr; /* Charts stack on smaller screens */
             }
         }
 
         @media (max-width: 768px) {
             .container {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr; /* Single column layout */
+                grid-template-rows: auto 1fr; /* Header auto height, main content takes rest */
             }
             
             .sidebar {
-                display: none;
+                display: none; /* Hide sidebar */
             }
 
             .header {
                 grid-column: 1;
+                padding: 0 15px; /* Reduce padding on smaller screens */
             }
 
             .main-content {
                 grid-column: 1;
+                padding: 15px; /* Reduce padding on smaller screens */
+            }
+            .page-title {
+                font-size: 20px;
             }
         }
 
         @media (max-width: 576px) {
             .search-bar {
-                width: 180px;
+                width: auto; /* Allow search bar to shrink more */
+                flex-grow: 1; /* Let it take available space */
+                margin-right: 10px; /* Add some space between search and user actions */
+            }
+            .search-bar input {
+                font-size: 14px;
             }
 
             .user-profile span {
-                display: none;
+                display: none; /* Hide username */
+            }
+            .avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
+            }
+            .user-actions {
+                gap: 15px; /* Reduce gap */
             }
 
             .stats-cards {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr; /* Single column for stat cards */
+            }
+            .stat-value {
+                font-size: 24px;
+            }
+            .stat-trend {
+                font-size: 13px;
+            }
+
+            .chart-header, .table-header {
+                flex-direction: column;
+                align-items: flex-start; /* Align items to start for column layout */
+            }
+            .chart-actions, .table-actions {
+                width: 100%; /* Make action groups take full width */
+            }
+            .chart-period, .filter-btn {
+                font-size: 12px;
+                padding: 6px 10px;
+            }
+            .pagination {
+                justify-content: center; /* Center pagination on small screens */
             }
         }
     </style>
@@ -585,7 +670,7 @@
                             <div class="chart-period">1 an</div>
                         </div>
                     </div>
-                    <canvas id="severityChart" height="250"></canvas>
+                    <canvas id="severityChart"></canvas>
                 </div>
                 <div class="chart-container">
                     <div class="chart-header">
@@ -596,7 +681,7 @@
                             <div class="chart-period">1 an</div>
                         </div>
                     </div>
-                    <canvas id="trendsChart" height="250"></canvas>
+                    <canvas id="trendsChart"></canvas>
                 </div>
             </div>
 
@@ -615,99 +700,101 @@
                         </button>
                     </div>
                 </div>
-                <table class="cve-table">
-                    <thead>
-                        <tr>
-                            <th>ID CVE</th>
-                            <th>Denumire</th>
-                            <th>Severitate</th>
-                            <th>Produs</th>
-                            <th>Data publicării</th>
-                            <th>Status</th>
-                            <th>Acțiuni</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>CVE-2025-0123</td>
-                            <td>Buffer Overflow in System Component</td>
-                            <td><span class="severity critical">Critical</span></td>
-                            <td>Windows Server 2022</td>
-                            <td>11 Mai 2025</td>
-                            <td><span class="status unpatched">Nerezolvat</span></td>
-                            <td>
-                                <button class="action-btn"><i class="fas fa-eye"></i></button>
-                                <button class="action-btn"><i class="fas fa-edit"></i></button>
-                                <button class="action-btn"><i class="fas fa-flag"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>CVE-2025-1047</td>
-                            <td>Cross-Site Scripting Vulnerability</td>
-                            <td><span class="severity high">High</span></td>
-                            <td>Apache Tomcat 9.0.85</td>
-                            <td>10 Mai 2025</td>
-                            <td><span class="status in-progress">În lucru</span></td>
-                            <td>
-                                <button class="action-btn"><i class="fas fa-eye"></i></button>
-                                <button class="action-btn"><i class="fas fa-edit"></i></button>
-                                <button class="action-btn"><i class="fas fa-flag"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>CVE-2025-3089</td>
-                            <td>SQL Injection in Auth Module</td>
-                            <td><span class="severity critical">Critical</span></td>
-                            <td>Oracle Database 19c</td>
-                            <td>09 Mai 2025</td>
-                            <td><span class="status patched">Rezolvat</span></td>
-                            <td>
-                                <button class="action-btn"><i class="fas fa-eye"></i></button>
-                                <button class="action-btn"><i class="fas fa-edit"></i></button>
-                                <button class="action-btn"><i class="fas fa-flag"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>CVE-2025-2468</td>
-                            <td>RCE in API Endpoint</td>
-                            <td><span class="severity high">High</span></td>
-                            <td>Spring Boot 3.2.1</td>
-                            <td>08 Mai 2025</td>
-                            <td><span class="status in-progress">În lucru</span></td>
-                            <td>
-                                <button class="action-btn"><i class="fas fa-eye"></i></button>
-                                <button class="action-btn"><i class="fas fa-edit"></i></button>
-                                <button class="action-btn"><i class="fas fa-flag"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>CVE-2025-5643</td>
-                            <td>CSRF in Admin Dashboard</td>
-                            <td><span class="severity medium">Medium</span></td>
-                            <td>WordPress 6.4.2</td>
-                            <td>07 Mai 2025</td>
-                            <td><span class="status patched">Rezolvat</span></td>
-                            <td>
-                                <button class="action-btn"><i class="fas fa-eye"></i></button>
-                                <button class="action-btn"><i class="fas fa-edit"></i></button>
-                                <button class="action-btn"><i class="fas fa-flag"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>CVE-2025-7832</td>
-                            <td>DoS Vulnerability in Network Stack</td>
-                            <td><span class="severity low">Low</span></td>
-                            <td>Cisco IOS XE 17.9.1</td>
-                            <td>05 Mai 2025</td>
-                            <td><span class="status unpatched">Nerezolvat</span></td>
-                            <td>
-                                <button class="action-btn"><i class="fas fa-eye"></i></button>
-                                <button class="action-btn"><i class="fas fa-edit"></i></button>
-                                <button class="action-btn"><i class="fas fa-flag"></i></button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive-wrapper">
+                    <table class="cve-table">
+                        <thead>
+                            <tr>
+                                <th>ID CVE</th>
+                                <th>Denumire</th>
+                                <th>Severitate</th>
+                                <th>Produs</th>
+                                <th>Data publicării</th>
+                                <th>Status</th>
+                                <th>Acțiuni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>CVE-2025-0123</td>
+                                <td>Buffer Overflow in System Component that could potentially lead to remote code execution.</td>
+                                <td><span class="severity critical">Critical</span></td>
+                                <td>Windows Server 2022</td>
+                                <td>11 Mai 2025</td>
+                                <td><span class="status unpatched">Nerezolvat</span></td>
+                                <td>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-flag"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>CVE-2025-1047</td>
+                                <td>Cross-Site Scripting Vulnerability in the main web application.</td>
+                                <td><span class="severity high">High</span></td>
+                                <td>Apache Tomcat 9.0.85</td>
+                                <td>10 Mai 2025</td>
+                                <td><span class="status in-progress">În lucru</span></td>
+                                <td>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-flag"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>CVE-2025-3089</td>
+                                <td>SQL Injection in Auth Module</td>
+                                <td><span class="severity critical">Critical</span></td>
+                                <td>Oracle Database 19c</td>
+                                <td>09 Mai 2025</td>
+                                <td><span class="status patched">Rezolvat</span></td>
+                                <td>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-flag"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>CVE-2025-2468</td>
+                                <td>RCE in API Endpoint</td>
+                                <td><span class="severity high">High</span></td>
+                                <td>Spring Boot 3.2.1</td>
+                                <td>08 Mai 2025</td>
+                                <td><span class="status in-progress">În lucru</span></td>
+                                <td>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-flag"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>CVE-2025-5643</td>
+                                <td>CSRF in Admin Dashboard</td>
+                                <td><span class="severity medium">Medium</span></td>
+                                <td>WordPress 6.4.2</td>
+                                <td>07 Mai 2025</td>
+                                <td><span class="status patched">Rezolvat</span></td>
+                                <td>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-flag"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>CVE-2025-7832</td>
+                                <td>DoS Vulnerability in Network Stack</td>
+                                <td><span class="severity low">Low</span></td>
+                                <td>Cisco IOS XE 17.9.1</td>
+                                <td>05 Mai 2025</td>
+                                <td><span class="status unpatched">Nerezolvat</span></td>
+                                <td>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-flag"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <div class="pagination">
                     <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
                     <button class="page-btn active">1</button>
@@ -722,33 +809,71 @@
     </div>
 
     <script>
-        // Charts
         document.addEventListener('DOMContentLoaded', function() {
-            // Severity Distribution Chart
+            // Severity Distribution Chart (Horizontal Bar)
             const severityCtx = document.getElementById('severityChart').getContext('2d');
             const severityChart = new Chart(severityCtx, {
-                type: 'doughnut',
+                type: 'bar',
                 data: {
                     labels: ['Critical', 'High', 'Medium', 'Low'],
                     datasets: [{
+                        label: 'Număr CVE-uri',
                         data: [24, 87, 153, 123],
                         backgroundColor: [
+                            '#e74c3c', // Critical
+                            '#f39c12', // High
+                            '#f1c40f', // Medium
+                            '#2ecc71'  // Low
+                        ],
+                        borderColor: [
                             '#e74c3c',
                             '#f39c12',
                             '#f1c40f',
                             '#2ecc71'
                         ],
-                        borderWidth: 0
+                        borderWidth: 1
                     }]
                 },
                 options: {
+                    indexAxis: 'y', // Makes bars horizontal
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            position: 'bottom'
+                            display: false // Legend not really needed for this type of chart
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.formattedValue;
+                                }
+                            }
                         }
                     },
-                    cutout: '70%'
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: {
+                                display: true,
+                                color: 'rgba(0,0,0,0.05)'
+                            },
+                            ticks: {
+                                font: {
+                                    size: 10
+                                }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        }
+                    }
                 }
             });
 
@@ -777,14 +902,32 @@
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            position: 'bottom'
+                            position: 'bottom',
+                             labels: {
+                                font: {
+                                    size: 12
+                                }
+                            }
                         }
                     },
                     scales: {
                         y: {
-                            beginAtZero: true
+                            beginAtZero: true,
+                            ticks: {
+                                font: {
+                                    size: 10
+                                }
+                            }
+                        },
+                        x: {
+                             ticks: {
+                                font: {
+                                    size: 10
+                                }
+                            }
                         }
                     }
                 }
@@ -793,11 +936,13 @@
             // Period selection for charts
             document.querySelectorAll('.chart-period').forEach(period => {
                 period.addEventListener('click', function() {
-                    const parent = this.parentElement;
-                    parent.querySelectorAll('.chart-period').forEach(p => {
+                    // Deselect siblings
+                    this.parentElement.querySelectorAll('.chart-period').forEach(p => {
                         p.classList.remove('active');
                     });
+                    // Select clicked
                     this.classList.add('active');
+                    // Here you would typically update chart data based on the selected period
                 });
             });
         });
